@@ -1,0 +1,46 @@
+<!doctype html>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Question time!</title>
+</head>
+<body>
+  <main>
+    <header><h1>Question count!</h1></header>
+    <p>So far, there have been <span id=count>0</span> questions</p>
+    <a href=# id=inc>Asked!</a>
+    <a href=# id=ref>Refresh</a>
+    <p>This means that she's asking questions at a rate of <span id=qpm>0</span> questions per minute (for the entirety of the lecture)</p>
+  </main>
+  <script type=text/javascript>
+    const qpm = document.getElementById('qpm')
+    const count = document.getElementById('count')
+    const button = document.getElementById('inc')
+    const ref = document.getElementById('ref')
+    let counter = count.textContent;
+    button.addEventListener('click', (ev) => { 
+      console.log('button pressed');
+      let xhr = new XMLHttpRequest()
+      xhr.open('POST', '/inc', true)
+      xhr.onload = function() {
+        count.textContent = JSON.parse(xhr.responseText).count;
+        qpm.textContent = (count.textContent/50).toFixed(2)
+
+      }
+      xhr.send()
+    })
+    ref.addEventListener('click', updateCount)
+    function updateCount() {
+      let xhh = new XMLHttpRequest();
+      xhh.open('GET', '/inc', true)
+      xhh.onload = function() {
+        count.textContent = JSON.parse(xhh.responseText).count;
+        qpm.textContent = (count.textContent/50).toFixed(2)
+      }
+      xhh.send()
+    }
+    updateCount()
+    window.setInterval(function(){ updateCount() }, 5000)
+     
+  </script>
+</body>
