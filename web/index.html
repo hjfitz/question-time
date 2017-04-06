@@ -21,7 +21,7 @@
     button.addEventListener('click', (ev) => { 
       console.log('button pressed');
       let xhr = new XMLHttpRequest()
-      xhr.open('POST', '/inc', true)
+      xhr.open('PATCH', '/inc', true)
       xhr.onload = function() {
         count.textContent = JSON.parse(xhr.responseText).count;
         qpm.textContent = (count.textContent/50).toFixed(2)

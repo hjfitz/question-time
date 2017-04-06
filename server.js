@@ -1,14 +1,37 @@
-var express = require('express')
-var app = express()
-var count = 0;
-var pages = __dirname + '/web/'
-app.post('/inc', function(req, res, next) { 
-  count = count + 1;
-  res.json({ "count": count })
+const 
+    express      = require('express'),
+    questionTime = express(),
+    pages        = __dirname + '/web/',
+    RateLimit    = require('express-rate-limit')
+;
+
+var count = 0
+
+var limiter = new RateLimit({
+    windowMs: 2*60*1000,
+    max: 10,
+    delayMs: 0
 })
-app.get('/inc', function(req,res,next) {
-  res.json({ "count":count})
+
+questionTime.use('/inc', limiter)
+
+// basic API
+
+questionTime.patch('/inc', (req, res) => {
+    count++
+    res.json({'count':count})
 })
-app.use('/', function(req, res, next) { console.log(new Date(), req.method, req.url); next(); });
-app.use('/', express.static(pages, { extensions: ['html'] }));
-app.listen(1337)
+
+questionTime.get('/inc', (req,res) => {
+    res.json({'count':count})
+})
+
+questionTime.use('/', (req, res, next) => { 
+    console.log(new Date(), req.method, req.url) 
+    next() 
+})
+
+
+questionTime.use('/', express.static(pages, { extensions: ['html'] }))
+
+questionTime.listen(1337)
